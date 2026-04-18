@@ -1,0 +1,12 @@
+[
+  {
+    "name": "Smart TV 55",
+    "category": "electronics",
+    "attributes": ["4k", "hdr", "wifi"]
+  },
+  {
+    "name": "Gaming Notebook",
+    "category": "computers",
+    "attributes": ["16gb ram", "rtx", "ssd"]
+  }
+]
