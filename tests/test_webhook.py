@@ -9,13 +9,15 @@ from leadbot.models import IncomingMessage
 
 
 class WebhookFlowTests(unittest.TestCase):
+    PRODUCT_CATALOG = Path(__file__).resolve().parents[1] / "config" / "products.json"
+
     def setUp(self) -> None:
         self.temp_dir = tempfile.TemporaryDirectory()
         self.db_path = Path(self.temp_dir.name) / "test.db"
         os.environ["DATABASE_URL"] = f"sqlite:///{self.db_path}"
         os.environ["ADMIN_PHONE"] = "5511999999999"
         os.environ["AI_PROVIDER"] = "heuristic"
-        os.environ["PRODUCT_CATALOG_PATH"] = str(Path(__file__).resolve().parents[1] / "config" / "products.json")
+        os.environ["PRODUCT_CATALOG_PATH"] = str(self.PRODUCT_CATALOG)
         self.app = create_app()
         asyncio.run(self.app.state.repository.init())
 

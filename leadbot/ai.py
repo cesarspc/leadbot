@@ -12,8 +12,6 @@ class HeuristicAIProvider:
         self.settings = settings
 
     async def analyze(self, message: str) -> str:
-        _ = self.settings.ai_api_key
-        _ = self.settings.ai_model
         return message.lower()
 
 

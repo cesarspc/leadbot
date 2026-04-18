@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import BaseModel, Field
 
 
@@ -7,7 +9,7 @@ class IncomingMessage(BaseModel):
 
 
 class LeadClassification(BaseModel):
-    quality: str
+    quality: Literal["high", "low"]
     confidence: float
     reason: str
 
