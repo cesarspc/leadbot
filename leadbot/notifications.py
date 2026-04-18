@@ -1,3 +1,7 @@
+import asyncio
+import json
+from urllib import request
+
 from leadbot.models import OutgoingMessage
 
 MAX_MESSAGE_PREVIEW_LENGTH = 200
@@ -14,6 +18,29 @@ class InMemoryWhatsAppGateway(WhatsAppGateway):
 
     async def send_message(self, message: OutgoingMessage) -> None:
         self.sent_messages.append(message)
+
+
+class WebhookWhatsAppGateway(WhatsAppGateway):
+    def __init__(self, api_url: str, api_token: str) -> None:
+        self.api_url = api_url
+        self.api_token = api_token
+
+    async def send_message(self, message: OutgoingMessage) -> None:
+        payload = json.dumps({"to": message.to, "body": message.body}).encode("utf-8")
+        req = request.Request(
+            self.api_url,
+            data=payload,
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {self.api_token}",
+            },
+            method="POST",
+        )
+        await asyncio.to_thread(self._send_sync, req)
+
+    def _send_sync(self, req: request.Request) -> None:
+        with request.urlopen(req, timeout=10) as response:
+            response.read()
 
 
 class LeadNotifier:

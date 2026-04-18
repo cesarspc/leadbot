@@ -15,6 +15,8 @@ class Settings:
     ai_model: str
     database_url: str
     product_catalog_path: str
+    whatsapp_api_url: str
+    whatsapp_api_token: str
 
 
 def load_settings() -> Settings:
@@ -28,6 +30,8 @@ def load_settings() -> Settings:
         ai_model=os.getenv("AI_MODEL", "default"),
         database_url=os.getenv("DATABASE_URL", "sqlite:///leadbot.db"),
         product_catalog_path=os.getenv("PRODUCT_CATALOG_PATH", "config/products.json"),
+        whatsapp_api_url=os.getenv("WHATSAPP_API_URL", ""),
+        whatsapp_api_token=os.getenv("WHATSAPP_API_TOKEN", ""),
     )
 
 

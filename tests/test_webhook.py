@@ -19,12 +19,14 @@ class WebhookFlowTests(unittest.TestCase):
         os.environ["ADMIN_PHONE"] = "5511999999999"
         os.environ["AI_PROVIDER"] = "heuristic"
         os.environ["PRODUCT_CATALOG_PATH"] = str(self.PRODUCT_CATALOG)
+        os.environ.pop("WHATSAPP_API_URL", None)
+        os.environ.pop("WHATSAPP_API_TOKEN", None)
         self.app = create_app()
         asyncio.run(self.app.state.repository.init())
 
     def tearDown(self) -> None:
         self.temp_dir.cleanup()
-        for key in ["DATABASE_URL", "ADMIN_PHONE", "AI_PROVIDER", "PRODUCT_CATALOG_PATH"]:
+        for key in ["DATABASE_URL", "ADMIN_PHONE", "AI_PROVIDER", "PRODUCT_CATALOG_PATH", "WHATSAPP_API_URL", "WHATSAPP_API_TOKEN"]:
             os.environ.pop(key, None)
 
     def _load_interactions(self) -> list[tuple]:

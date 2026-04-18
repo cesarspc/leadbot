@@ -16,6 +16,7 @@ Set environment variables as needed:
 - `ADMIN_PHONE`
 - `DATABASE_URL` (default `sqlite:///leadbot.db`)
 - `PRODUCT_CATALOG_PATH` (default `config/products.json`)
+- `WHATSAPP_API_URL`, `WHATSAPP_API_TOKEN` (if set, outbound WhatsApp messages are sent via this API)
 
 ## Run
 ```bash

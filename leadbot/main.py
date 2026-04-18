@@ -4,16 +4,25 @@ from fastapi import FastAPI
 
 from leadbot.ai import build_ai_provider
 from leadbot.classifier import LeadClassifier
-from leadbot.config import load_product_catalog, load_settings
+from leadbot.config import Settings, load_product_catalog, load_settings
 from leadbot.models import IncomingMessage, WebhookResponse
-from leadbot.notifications import InMemoryWhatsAppGateway, LeadNotifier
+from leadbot.notifications import InMemoryWhatsAppGateway, LeadNotifier, WhatsAppGateway, WebhookWhatsAppGateway
 from leadbot.repository import LeadRepository
 from leadbot.services import MessageProcessor
 
 
+def _build_gateway(settings: Settings) -> WhatsAppGateway:
+    if settings.whatsapp_api_url:
+        return WebhookWhatsAppGateway(
+            api_url=settings.whatsapp_api_url,
+            api_token=settings.whatsapp_api_token,
+        )
+    return InMemoryWhatsAppGateway()
+
+
 def create_app() -> FastAPI:
     settings = load_settings()
-    gateway = InMemoryWhatsAppGateway()
+    gateway = _build_gateway(settings)
     repository = LeadRepository(settings.database_url)
     classifier = LeadClassifier(load_product_catalog(settings.product_catalog_path))
     processor = MessageProcessor(
