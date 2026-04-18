@@ -15,7 +15,7 @@ class WebhookFlowTests(unittest.TestCase):
         os.environ["DATABASE_URL"] = f"sqlite:///{self.db_path}"
         os.environ["ADMIN_PHONE"] = "5511999999999"
         os.environ["AI_PROVIDER"] = "heuristic"
-        os.environ["PRODUCT_CATALOG_PATH"] = "/home/runner/work/leadbot/leadbot/config/products.json"
+        os.environ["PRODUCT_CATALOG_PATH"] = str(Path(__file__).resolve().parents[1] / "config" / "products.json")
         self.app = create_app()
         asyncio.run(self.app.state.repository.init())
 

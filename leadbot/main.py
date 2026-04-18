@@ -1,3 +1,5 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 
 from leadbot.ai import build_ai_provider
@@ -21,11 +23,12 @@ def create_app() -> FastAPI:
         repository=repository,
     )
 
-    app = FastAPI(title="LeadBot")
-
-    @app.on_event("startup")
-    async def startup() -> None:
+    @asynccontextmanager
+    async def lifespan(_: FastAPI):
         await repository.init()
+        yield
+
+    app = FastAPI(title="LeadBot", lifespan=lifespan)
 
     @app.post("/webhook", response_model=WebhookResponse)
     async def webhook(payload: IncomingMessage) -> WebhookResponse:

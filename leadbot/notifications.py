@@ -1,5 +1,7 @@
 from leadbot.models import OutgoingMessage
 
+MAX_MESSAGE_PREVIEW_LENGTH = 200
+
 
 class WhatsAppGateway:
     async def send_message(self, message: OutgoingMessage) -> None:
@@ -26,6 +28,6 @@ class LeadNotifier:
             "🔥 High-quality lead detected\n"
             f"Prospect: {phone_number}\n"
             f"Confidence: {confidence}\n"
-            f"Context: {message[:200]}"
+            f"Context: {message[:MAX_MESSAGE_PREVIEW_LENGTH]}"
         )
         await self.gateway.send_message(OutgoingMessage(to=self.admin_phone, body=body))
