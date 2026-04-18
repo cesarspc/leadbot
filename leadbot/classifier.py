@@ -1,3 +1,5 @@
+import re
+
 from leadbot.models import LeadClassification
 
 
@@ -20,7 +22,7 @@ class LeadClassifier:
         self.products = products
 
     def classify(self, analyzed_message: str) -> LeadClassification:
-        words = set(analyzed_message.split())
+        words = set(re.findall(r"\b\w+\b", analyzed_message))
         score = len(words.intersection(HIGH_INTENT_KEYWORDS))
 
         for product in self.products:

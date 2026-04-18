@@ -1,5 +1,6 @@
 import asyncio
 import os
+import sqlite3
 import tempfile
 import unittest
 from pathlib import Path
@@ -26,6 +27,16 @@ class WebhookFlowTests(unittest.TestCase):
         for key in ["DATABASE_URL", "ADMIN_PHONE", "AI_PROVIDER", "PRODUCT_CATALOG_PATH"]:
             os.environ.pop(key, None)
 
+    def _load_interactions(self) -> list[tuple]:
+        with sqlite3.connect(self.db_path) as conn:
+            return conn.execute(
+                """
+                SELECT phone_number, inbound_message, lead_quality, confidence
+                FROM interactions
+                ORDER BY id ASC
+                """
+            ).fetchall()
+
     def test_high_quality_message_notifies_admin(self) -> None:
         inbound = IncomingMessage(phone_number="5511988887777", message="I want to buy a Smart TV 55 today, budget is 3500")
 
@@ -35,6 +46,10 @@ class WebhookFlowTests(unittest.TestCase):
         self.assertGreaterEqual(response.classification.confidence, 0.75)
         self.assertEqual(len(self.app.state.gateway.sent_messages), 1)
         self.assertIn("5511988887777", self.app.state.gateway.sent_messages[0].body)
+        self.assertEqual(
+            self._load_interactions(),
+            [("5511988887777", "I want to buy a Smart TV 55 today, budget is 3500", "high", response.classification.confidence)],
+        )
 
     def test_low_quality_message_does_not_notify_admin(self) -> None:
         inbound = IncomingMessage(phone_number="5511977776666", message="Hello, good morning")
@@ -43,6 +58,10 @@ class WebhookFlowTests(unittest.TestCase):
 
         self.assertEqual(response.classification.quality, "low")
         self.assertEqual(len(self.app.state.gateway.sent_messages), 0)
+        self.assertEqual(
+            self._load_interactions(),
+            [("5511977776666", "Hello, good morning", "low", response.classification.confidence)],
+        )
 
 
 if __name__ == "__main__":
